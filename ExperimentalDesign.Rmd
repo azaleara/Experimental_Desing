@@ -1,0 +1,180 @@
+---
+title: "Experimental desing"
+author: "Azalea"
+date: "11/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Diseño experimental
+
+### Los datos deben ser obtenidos de acuerdo a una pregunta de investigación e hipótesis.
+- Plan de acuerdo a la VI y VD
+- Diseño: relación entre esas variables
+- 
+
+### Componentes de un experimento
+- Ramdomization: aleatorización cualquier variable de no interés al azar, evitar sesgos. 
+- Replication: Recall that replication means you need to conduct an experiment with an adequate number of subjects to achieve an acceptable statistical power.
+- Blocking: Though this is not true, suppose the supplement type is actually a nuisance factor we'd like to control for by blocking, and we're actually only interested in the effect of the dose of Vitamin C on guinea pig tooth growth. If we block by supplement type, we create groups that are more similar, in that they'll have the same supplement type, allowing us to examine only the effect of dose on tooth length.
+
+
+## Hipótesis
+
+H0:
+HI:
+
+### Poder y tamaño de la muestra
+
+**Poder**: la probabilidad de que la `prueba` rechace "correctamente" la HO cuando la HI es verdadera.
+Regla de oro: 80% 
+**Tamaño del efecto**: medida estándar de la diferencia que se trata de detectar. 
+**Tamaño de la muestra**: cuántas unidades experimentales se requieren para detectar el efecto y poder deseado. 
+
+
+# Errores en probar la hipótesis 
+
+### T Test
+We can also conduct a one-sided t-test, explicitly checking to see if the mean is less than or greater than 18. Whether to use a one- or two-sided test usually follows from your research question. Does an intervention cause longer tooth growth? One-sided, greater than. Does a drug cause the test group to lose more weight? One-sided, less than. Is there a difference in mean test scores between two groups of students? Two-sided test.
+
+
+
+```{r}
+t.test(ToothGrowth$len, alternative = "less", mu = 18)
+t.test(ToothGrowth$len, alternative = "greater", mu = 18)
+```
+
+
+
+```{r}
+library(pwr.t.test)
+```
+
+
+Power & Sample Size Calculations
+One key part of designing an experiment is knowing the required sample size you'll need to be able to test your hypothesis.
+
+The pwr package provides a handy function, pwr.t.test(), which will calculate that for you. However, you do need to know your desired significance level (often 0.05), if the test is one- or two-sided, if the data is from one sample, two samples, or paired, the effect size, and the power. Some of this information will be given to you or can be reasoned from the design.
+
+A power or sample size calculation is usually different each time you conduct one, and the details of the calculation strongly depend on what kind of experiment you're designing and what your end goals are.
+
+
+
+```{r}
+# Load the pwr package
+library(pwr)
+
+# Calculate power
+pwr.t.test(n = 100, 
+           d = 0.35,
+           sig.level = 0.10,
+           type = "two.sample", 
+           alternative = "two.sided",
+           power = NULL)
+```
+
+
+```{r}
+# Calculate sample size
+pwr.t.test(n = NULL, 
+           d = 0.25, 
+           sig.level = 0.05, 
+           type = "one.sample", 
+           alternative = "greater", 
+           power = 0.8)
+```
+
+
+```{r}
+# Build a linear regression model, purpose_recode_model
+purpose_recode_model <- lm(funded_amnt ~ purpose_recode, data = lendingclub)
+
+# Examine results of purpose_recode_model
+summary(purpose_recode_model)
+
+# Get anova results and save as purpose_recode_anova
+purpose_recode_anova <- anova(purpose_recode_model)
+
+# Print purpose_recode_anova
+purpose_recode_anova
+
+# Examine class of purpose_recode_anova
+class(purpose_recode_anova)
+```
+
+
+```{r}
+# Use aov() to build purpose_emp_aov
+purpose_emp_aov <- aov(funded_amnt ~ purpose_recode + emp_length, data = lendingclub)
+
+# Print purpose_emp_aov to the console
+purpose_emp_aov
+
+# Call summary() to see the p-value
+summary(purpose_emp_aov)
+```
+
+ANOVA
+
+```{r}
+# Examine the summary of int_rate
+summary(lendingclub$int_rate)
+
+# Examine int_rate by grade
+lendingclub %>% 
+	group_by(grade) %>% 
+	summarize(mean = mean(int_rate), var = var(int_rate), median = median(int_rate))
+
+# Make a boxplot of int_rate by grade
+ggplot(lendingclub, aes(x = grade, y = int_rate)) + 
+	geom_boxplot()
+
+# Use aov() to create grade_aov plus call summary() to print results
+grade_aov <- aov(int_rate ~ grade, data = lendingclub)
+summary(grade_aov)
+```
+
+```{r}
+# For a 2x2 grid of plots:
+par(mfrow=c(2, 2))
+
+# Plot grade_aov
+plot(grade_aov)
+
+# Bartlett's test for homogeneity of variance
+bartlett.test(int_rate ~ grade, data = lendingclub)
+```
+
+
+Kruskal-wallis 
+```{r}
+# Conduct the Kruskal-Wallis rank sum test
+kruskal.test(int_rate ~ grade,
+             data = lendingclub)
+```
+
+
+# A/B Testing 
+
+```{r}
+# Plot the A/B test results
+ggplot(lendingclub_ab, aes(x = Group, y = loan_amnt)) + 
+	geom_boxplot()
+
+# Conduct a two-sided t-test
+t.test(loan_amnt ~ Group, data = lendingclub_ab, alternative = "two.sided")
+```
+
+Analisis multivariado
+
+```{r}
+# Build lendingclub_multi
+lendingclub_multi <-lm(loan_amnt ~ Group + grade + verification_status, data = lendingclub_ab)
+
+# Examine lendingclub_multi results
+tidy(lendingclub_multi)
+```
+

@@ -1,0 +1,127 @@
+---
+title: "Tamaño de la muestra"
+author: "Azalea"
+date: "11/11/2020"
+output: html_document
+---
+
+# Cacular el tamaño de la muestra
+
+### Factores que determinan al tamaño de la muestra
+
+- Logísticos:
+  1. Disponibilidad
+
+
+- Estadísticos: 
+  1. Hipótesis nula: µ1 = µ2, si se trata de un estudio comparativo de dos muestras
+  
+  2. Error tipo I o error α = probabilidad de rechazar H0 / (1 – α)*100 = Nivel de confianza
+  
+  3. Error tipo II o error β = probabilidad de aceptar H0 / [0.1 : 0.2]
+  
+  4. Poder estadístico = probabilidad de un estudio de aceptar la H0 correctamente: 1 - β = 1 - 0.2 = 0.8
+  
+  5. Tamaño del efecto: cuántas desviaciones típicas de diferencia hay entre los resultados de los grupos que se comparan *
+  
+  6. Variabilidad: para las`variables continuas` se usa el coeficiente de variación (CV) [CV (µ) = (sd/µ)], donde SY es la desviación estándar y Y es la media. Para las `variables discretas` con estimación de proporciones.
+
+  7. Pérdidas en el seguimiento del estudio: n(1/1-R) / R son pérdidas esperadas
+  
+  8. Relevancia del tamaño del efecto y significancia estadística. 
+  
+  9. Tamaño del efecto: cuántas desviaciones típicas de diferencia hay entre los resultados de los grupos que se comparan *
+  
+  
+  
+# Calcular el tamaño de la muestra
+
+Necesitamos la libreria
+```{r}
+library(pwr)
+```
+
+
+## Esta librería considera estos conceptos importantes:
+
+- **Poder**: la probabilidad de que la `prueba` rechace "correctamente" la HO cuando la HI es verdadera Regla de oro: 80% 
+- **Tamaño del efecto**: medida estándar de la diferencia que se trata de detectar. 
+- **Tamaño de la muestra**: cuántas unidades experimentales se requieren para detectar el efecto y poder deseado. 
+- **Nivel de significancia**: - Nivel de significancia = alfa
+
+### Teniendo tres de estos parámetros, puedes calcular el cuarto
+
+
+
+# Vamos a hacer un experimento con base en los datos de `epilepsia`
+
+ Hi: El grupo de pacientes tratados con `placebo` tendran MAS crisis epiléticas respecto a los pacientes tratados con `progabide`.
+ 
+ Esta hipótesis se prueba con una t test, una cola, dos muestras independientes.
+ 
+ ¿Cuántas observaciones (tamaño de la muestra = n) necesitamos incluir en cada grupo?
+ 
+```{r}
+pwr.t.test(n = NULL, 
+           d = 0.8, 
+           sig.level = 0.05, 
+           type = "two.sample", 
+           alternative = "greater", 
+           power = 0.8)
+```
+
+type: "two.sample", "one.sample" "paired"
+alternative: "greater", "less", "two.sided"
+
+# Ejercicio 1
+
+ Hi: Existiran diferencias en el números de crisis epilépticas entre el grupo de pacientes tratados con `progabide` y los pacientes tratados con `placebo`.
+
+caclula el tamaño de la muestra: con una d = 0.8, nivel de significancia = 0.05 y el poder de 0.8.
+
+
+# Ejercicio 2
+ Hi: El grupo de pacientes tratados con `progabide` tendran MAYOR crisis epilépticas en la línea base respecto al cuarto-último periodo de tratamiento.
+ 
+caclula el tamaño de la muestra: con una d = 0.8, nivel de significancia = 0.05 y el poder de 0.8.
+
+
+
+
+
+# Funciones de la librería `pwr`:
+function |-------|  power calculations for
+
+- pwr.2p.test  |-------|  two proportions (equal n)
+- pwr.2p2n.test  |-------|  two proportions (unequal n)
+- pwr.anova.test  |-------|   balanced one way ANOVA
+- pwr.chisq.test  |-------|   chi-square test
+- pwr.f2.test  |-------|  general linear model
+- pwr.p.test  |-------|  proportion (one sample)
+- pwr.r.test  |-------|  correlation
+- pwr.t.test  |-------|   t-tests (one sample, 2 sample, paired)
+- pwr.t2n.test  |-------|  t-test (two samples with unequal n)
+
+
+```{r}
+library(NeurocienciasIntroData)
+library(MASS)
+epilepsia <- epil
+library(dplyr)
+```
+
+```{r}
+str(NeurocienciasIntroData::reporte.casos.covid)
+str(epilepsia)
+epil %>% filter(trt == "placebo")
+```
+
+
+
+
+
+
+
+
+
+
